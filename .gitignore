@@ -1,0 +1,17 @@
+/target/
+*.idea
+*.iml
+.settings
+
+/.gradle
+*/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+*/bin/*
+*.class
+.settings\
+.classpath
+.project
+.vscode/settings.json
+crowdin.yml
