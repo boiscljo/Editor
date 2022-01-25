@@ -1,0 +1,134 @@
+defaultTasks 'clean', 'screamCompile'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = 'https://repo.screamingsandals.org/public'
+        }
+        maven {
+            url = uri('https://repo.dmulloy2.net/nexus/repository/public/')
+        }
+        maven {
+            url = uri('https://repo.dmulloy2.net/nexus/repository/public/')
+        }
+        maven {
+            url = uri('https://repo.screamingsandals.org/public')
+        }
+        maven {
+            url = uri('https://repo.screamingsandals.org/releases')
+        }
+        maven {
+            url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/')
+        }
+        maven {
+            url = uri('https://papermc.io/repo/repository/maven-public/')
+        }
+        maven {
+            url = uri('https://repo.maven.apache.org/maven2/')
+        }
+        maven {
+            url = uri('https://repo.screamingsandals.org/snapshots')
+        }
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
+    }
+    dependencies {
+        classpath 'org.screamingsandals.gradle:builder:' + SCREAMING_PLUGIN_BUILDER_VERSION
+    }
+    dependencies {
+        classpath "com.github.gmazzo:gradle-buildconfig-plugin:${BUILDCONFIG_VERSION}"
+    }
+    repositories {
+        jcenter()
+    }
+ 
+    dependencies {
+        // Add dependency for build script,
+        // so we can access Git from our
+        // build script.
+        classpath 'org.ajoberstar:grgit:1.1.0'
+    }
+}
+ext {
+    // Open the Git repository in the current directory.
+    git = org.ajoberstar.grgit.Grgit.open(file('.'))
+ 
+    // Get commit id of HEAD.
+    revision = git.head().abbreviatedId
+    // Alternative is using abbreviatedId of head() method.
+    // revision = git.head().abbreviatedId
+}
+allprojects {
+    group = 'com.moyskleytech.mc.editor'
+    version = revision
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.screamingsandals.plugin-builder'
+    
+    //apply plugin: 'org.screamingsandals.gradle.builder'
+
+    enableShadowPlugin()
+
+    configurations.all {
+        // Check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = uri('https://repo.dmulloy2.net/nexus/repository/public/')
+        }
+        maven {
+            url = uri('https://repo.screamingsandals.org/public')
+        }
+        maven {
+            url = uri('https://repo.screamingsandals.org/releases')
+        }
+        maven {
+            url = uri('https://repo.extendedclip.com/content/repositories/placeholderapi/')
+        }
+        maven {
+            url = uri('https://papermc.io/repo/repository/maven-public/')
+        }
+        maven {
+            url = uri('https://repo.maven.apache.org/maven2/')
+        }
+        maven {
+            url = uri('https://repo.screamingsandals.org/snapshots')
+        }
+        maven{
+            url = uri('https://nexus.iridiumdevelopment.net/repository/maven-releases/')
+        }
+    }
+
+    dependencies {
+        compileOnly paperLegacy(PAPER_LEGACY_VERSION)
+        compileOnly 'org.screamingsandals.bedwars:BedWars:' + BEDWARS_VERSION
+        compileOnly 'org.screamingsandals.bedwars:BedWars-API:' + BEDWARS_VERSION
+    }
+
+    shadowJar {
+        relocate 'org.spongepowered.configurate', 'com.moyskleytech.mc.lib.configurate'
+        relocate 'org.yaml.snakeyaml', 'com.moyskleytech.mc.lib.snakeyaml'
+        //relocate 'net.kyori', 'com.moyskleytech.mc.lib.kyori'
+        relocate 'cloud.commandframework', 'com.moyskleytech.mc.lib.cloud'
+        relocate 'me.lucko.commodore', 'com.moyskleytech.mc.lib.commodore'
+        relocate 'org.screamingsandals.lib', 'com.moyskleytech.mc.lib.screaminglib'
+        relocate 'com.iridium.iridiumcolorapi', 'com.moyskleytech.mc.lib.iridiumcolorapi'
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+    sourceCompatibility = '11.0'
+}
+
+
+
